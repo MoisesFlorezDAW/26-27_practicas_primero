@@ -22,7 +22,6 @@ function cuerpo()
 {
 ?>
     <br><br>
-    <a href="./aplicacion/pruebas/index.php">Acceso a pruebas</a>
-    Hola, estás en Index.php
+    <a href="index.php">Inicio</a>
 <?php
 }
