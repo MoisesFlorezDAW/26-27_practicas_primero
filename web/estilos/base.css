@@ -32,6 +32,12 @@ body {
     font-style: italic;
 }
 
+#barraUbicacion{
+    background-color: peachpuff;
+    color: black;
+}
+
+
 .boton{
     background-color: blue;
     color:rgb(8, 7, 7);
