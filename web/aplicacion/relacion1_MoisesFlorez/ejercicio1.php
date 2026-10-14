@@ -1,5 +1,5 @@
 <?php
-include_once(dirname(__FILE__) . "/../../../cabecera.php");
+include_once(dirname(__FILE__) . "/../../cabecera.php");
 //Variables Math pow
 $num = 2;
 $expo = 4;
@@ -23,6 +23,6 @@ function cabecera()
 function cuerpo($num, $expo, $numRound){   
     echo "La potencia de $num elevado a $expo es: " . pow($num, $expo) . PHP_EOL;
     echo "$numRound redondeado es: " . round($numRound, 2) . PHP_EOL;
-        
+    echo __DIR__;
 }
 
