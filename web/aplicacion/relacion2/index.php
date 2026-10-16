@@ -21,10 +21,11 @@ function cuerpo()
 ?>
     <br><br>
     <a href="./aplicacion/pruebas/index.php">Acceso a pruebas</a>
-    <h2>Relacion1</h2>
+    <h2>Relacion 2</h2>
     <ul>
     <li><a href="Ejercicio1.php">Ejercicio 1</a><br></li>
-    
+    <li><a href="Ejercicio2.php">Ejercicio 2</a></li>
+    <li><a href="Ejercicio3.php">Ejercicio 3</a></li>
     </ul>
 <?php
 }
