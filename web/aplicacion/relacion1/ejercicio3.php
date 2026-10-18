@@ -1,5 +1,19 @@
 <?php
-include_once(dirname(__FILE__) . "/../../../cabecera.php");
+include_once(dirname(__FILE__) . "/../../cabecera.php");
+$barraUbi = [
+    [
+        "TEXTO"=>"Inicio",
+        "LINK" =>"/index.php"
+    ],
+    [
+        "TEXTO"=>"Relacion 1",
+        "LINK" =>"index.php"
+    ],
+    [
+        "TEXTO"=>"Ejercicio 3",
+        "LINK" =>"ejercicio3.php"
+    ]
+];
 //controlador
 $array1 = [];            // a) Crear array
 $array1[1]  = "valor1";  // b) Rellenar posiciones
@@ -48,7 +62,7 @@ $array3 = [
 inicioCabecera("APLICACION PRIMER TRIMESTRE");
 cabecera();
 finCabecera();
-inicioCuerpo("2DAW APLICACION");
+inicioCuerpo("Ejercicio 3", $barraUbi);
 cuerpo($array1, $array2, $array3); //llamo a la vista
 finCuerpo();
 // **********************************************************

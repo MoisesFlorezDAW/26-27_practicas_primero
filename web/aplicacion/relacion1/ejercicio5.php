@@ -1,5 +1,19 @@
 <?php
-include_once(dirname(__FILE__) . "/../../../cabecera.php");
+include_once(dirname(__FILE__) . "/../../cabecera.php");
+$barraUbi = [
+    [
+        "TEXTO"=>"Inicio",
+        "LINK" =>"/index.php"
+    ],
+    [
+        "TEXTO"=>"Relacion 1",
+        "LINK" =>"index.php"
+    ],
+    [
+        "TEXTO"=>"Ejercicio 5",
+        "LINK" =>"ejercicio5.php"
+    ]
+];
 //controlador
 $vector=array();
 $vector[1]="esto es una cadena";
@@ -12,7 +26,7 @@ $vector[56]=23;
 inicioCabecera("APLICACION PRIMER TRIMESTRE");
 cabecera();
 finCabecera();
-inicioCuerpo("2DAW APLICACION");
+inicioCuerpo("Ejercicio 5", $barraUbi);
 cuerpo($vector); //llamo a la vista
 finCuerpo();
 // **********************************************************

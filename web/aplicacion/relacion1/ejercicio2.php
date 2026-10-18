@@ -1,5 +1,19 @@
 <?php
-include_once(dirname(__FILE__) . "/../../../cabecera.php");
+include_once(dirname(__FILE__) . "/../../cabecera.php");
+$barraUbi = [
+    [
+        "TEXTO"=>"Inicio",
+        "LINK" =>"/index.php"
+    ],
+    [
+        "TEXTO"=>"Relacion 1",
+        "LINK" =>"index.php"
+    ],
+    [
+        "TEXTO"=>"Ejercicio 2",
+        "LINK" =>"ejercicio2.php"
+    ]
+];
 //Variables Math pow
 const numLanzamientos = 1000;  
 $dado = mt_rand(1, 6);
@@ -16,7 +30,7 @@ $arraySeis = array();
 inicioCabecera("APLICACION PRIMER TRIMESTRE");
 cabecera();
 finCabecera();
-inicioCuerpo("2DAW APLICACION");
+inicioCuerpo("Ejercicio 2", $barraUbi);
 cuerpo(numLanzamientos, $dado, $arrayUno, $arrayDos, 
         $arrayTres, $arrayCuatro, $arrayCinco, $arraySeis); //llamo a la vista
 finCuerpo();

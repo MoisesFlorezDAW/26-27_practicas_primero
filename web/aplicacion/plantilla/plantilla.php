@@ -48,7 +48,7 @@ function finCabecera()
 <?php   
 }
 
-function inicioCuerpo($cabecera, array $ubicacion=[])
+function inicioCuerpo($cabecera, array $barraUbi=[])
 {
     global $acceso;
 
@@ -57,7 +57,8 @@ function inicioCuerpo($cabecera, array $ubicacion=[])
         <div id="documento">
         
             <header>
-                <h1 id="titulo"><?php echo $cabecera;?></h1>
+                <span id="logo"><a href="/"><img src="../../imagenes/PHP-logo.svg.webp" width="80px"></a></span>
+                <span id="titulo"><?php echo $cabecera;?></span>
             </header>
             
             <div id="barraLogin">
@@ -65,27 +66,40 @@ function inicioCuerpo($cabecera, array $ubicacion=[])
             </div>
             <div id="barraMenu">
                 <ul>
-                    <li><a href="/index.php">Inicio</a></li>
+                    <li><a href="../../aplicacion/relacion1/index.php">Relacion 1</a></li>
+                    <li><a href="../../aplicacion/relacion2/index.php">Relacion 2</a></li>
                  </ul> 
                 
-        <div>
-            </div id="barraUbicacion">
-                <?php
-                foreach ($ubicacion as $elemento) {
-                    if (isset($elemento["ENLACE"])) {
-                        echo "<a href='{$elemento["ENLACE"]}' >";
-                        echo $elemento["TEXTO"] . "  ";
-                        echo "</a>";
-                    }else
-                        echo $elemento["TEXTO"] . "  ";
-                }
+            </div>
+            <div id="barraUbicacion"><?php
+                if (isset($barraUbi))
+                    {
+                        $primero=true;
+                        foreach ($barraUbi as $elemento) 
+                            {
+                                if (isset($elemento["TEXTO"]))
+                                {
+                                    if (!$primero)
+                                        echo " >> ";        
+                                    if (isset($elemento["LINK"]) && $elemento["LINK"])
+                                            echo " <a href=\"{$elemento["LINK"]}\" >";
+                                    
+                                    echo $elemento["TEXTO"];
 
+                                    if (isset($elemento["LINK"]) && $elemento["LINK"])
+                                            echo " </a>";
+                                    
+                                    $primero=false;
+                                }
+
+                            }
+                    }
                 ?>
+            </div>
+    
             <div>
-         </div>
 <?php   
 }
-
 
 function finCuerpo()
 {
@@ -96,7 +110,7 @@ function finCuerpo()
             <footer>
                 <hr width="90%"  />  
                 <div>
-                    &copy; Copyright  by Profesor
+                    &copy; Copyright  by Moises 2026 - 2027
                 </div>
             </footer>
         </div>

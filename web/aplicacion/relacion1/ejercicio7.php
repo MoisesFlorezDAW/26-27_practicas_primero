@@ -1,18 +1,32 @@
 <?php
-include_once(dirname(__FILE__) . "/../../../cabecera.php");
+include_once(dirname(__FILE__) . "/../../cabecera.php");
+$barraUbi = [
+    [
+        "TEXTO"=>"Inicio",
+        "LINK" =>"/index.php"
+    ],
+    [
+        "TEXTO"=>"Relacion 1",
+        "LINK" =>"index.php"
+    ],
+    [
+        "TEXTO"=>"Ejercicio 7",
+        "LINK" =>"ejercicio7.php"
+    ]
+];
 
 // Dibuja la plantilla de la vista
 inicioCabecera("APLICACION PRIMER TRIMESTRE");
 cabecera();
 finCabecera();
-inicioCuerpo("2DAW APLICACION");
+inicioCuerpo("Ejercicio 7", $barraUbi);
 cuerpo();
 finCuerpo();
 
 // **********************************************************
 // Vista
 function cabecera()
-{cb
+{
 }
 
 function cuerpo()
