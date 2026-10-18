@@ -1,15 +1,21 @@
 <?php
-include_once(dirname(__FILE__) . "/../../../cabecera.php");
+include_once(dirname(__FILE__) . "/../../cabecera.php");
+$barraUbi = [
+    [
+        "TEXTO"=>"Inicio",
+        "LINK" =>"/index.php"
+    ],
+    [
+        "TEXTO"=>"Relacion 1",
+        "LINK" =>"index.php"
+    ],
+    [
+        "TEXTO"=>"Ejercicio 4",
+        "LINK" =>"ejercicio4.php"
+    ]
+];
 
-inicioCabecera("APLICACION PRIMER TRIMESTRE");
-cabecera();
-finCabecera();
-inicioCuerpo("2DAW APLICACION");
-cuerpo();
-finCuerpo();
-
-// **********************************************************
-// Controlador
+// Controlador 
 
 $array = array();
 
@@ -37,14 +43,22 @@ for ($i = 1; $i <= FILAS; $i++) {
     $arrayFilas[] = $fila;
 }
 
+// Después se dibuja la plantilla
+inicioCabecera("APLICACION PRIMER TRIMESTRE");
+cabecera();
+finCabecera();
+inicioCuerpo("Ejercicio 4", $barraUbi);
+cuerpo($array, $arrayFilas); // llamo a la vista pasando los datos
+finCuerpo();
+
+// **********************************************************
+// Vista
 function cabecera()
 {
 }
 
-function cuerpo()
+function cuerpo($array, $arrayFilas)
 {
-    global $array, $arrayFilas;
-
     echo "<h2>Array con 5 filas</h2>";
 
     foreach ($array as $fila) {

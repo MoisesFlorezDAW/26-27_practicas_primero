@@ -1,5 +1,19 @@
 <?php
-include_once(dirname(__FILE__) . "/../../../cabecera.php");
+include_once(dirname(__FILE__) . "/../../cabecera.php");
+$barraUbi = [
+    [
+        "TEXTO"=>"Inicio",
+        "LINK" =>"/index.php"
+    ],
+    [
+        "TEXTO"=>"Relacion 1",
+        "LINK" =>"index.php"
+    ],
+    [
+        "TEXTO"=>"Ejercicio 6",
+        "LINK" =>"ejercicio6.php"
+    ]
+];
 //controlador
  $vector=array("primera" =>12.56, 24=>true, 67 =>23.76);
 
@@ -7,7 +21,7 @@ include_once(dirname(__FILE__) . "/../../../cabecera.php");
 inicioCabecera("APLICACION PRIMER TRIMESTRE");
 cabecera();
 finCabecera();
-inicioCuerpo("2DAW APLICACION");
+inicioCuerpo("Ejercicio 6", $barraUbi);
 cuerpo($vector); //llamo a la vista
 finCuerpo();
 // **********************************************************
