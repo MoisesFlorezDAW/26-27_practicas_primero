@@ -96,3 +96,66 @@ function operaciones(int $tipo, float ...$operandos){
             return $resultado;
     }
 }
+
+/**
+ * 4.- Función devuelve().  Esta función recibe como parámetros tres números (enteros)  y devuelve la 
+suma de los tres valores  en el primer parámetro  y como resultado de la función el producto de los 
+tres valores. Los dos últimos parámetros tendrán definidos valor por defecto (el que queráis). 
+$valor=7; devuelve($valor,4) //$valor valdrá 7+4+10 y se devuelve 7*4*10 (10 es el valor por defecto que 
+le he puesto al tercer parámetro. 
+ Hacer varias llamadas a la función indicando: 
+ - Los tres parámetros 
+ - El primer parámetro únicamente 
+ - El primer y el segundo parámetro 
+ - El primer y el tercer parámetro (ojo, el segundo parámetro no se indica) 
+ */
+
+function devuelve(int &$valor1, int $valor2 = 6, int $valor3 = 9)
+{
+    $producto = $valor1 * $valor2 * $valor3;
+    $valor1 =  $valor1 + $valor2 + $valor3;
+
+    return $producto;
+}
+
+
+/**
+ * 5.-  Se  tienen  las  funciones  suma,  resta  y  multiplicacion  que  reciben  cada  una  dos  parámetros 
+    numéricos  (entero)  y  que  devuelven  el  resultado  de  la  operación  que  indica  su  nombre  sobre  los 
+    parámetros. Tenemos  la  Función  hacerOperacion  que  recibe  tres  parámetros.  El  primero  es  una  cadena 
+    que  puede  ser  suma,  resta  o  multiplicacion.  Los  otros  dos  son  los  operandos.  Esta  función  se 
+    encargará de devolver el resultado de ejecutar la “cadena” con los operandos usando una variable-
+    función para llamar a la operación. Hay que comprobar indicando una operación correcta (devuelve 
+    false si la operación no es válida). 
+    hacerOperacion(“resta”,3,1) //devuelve 3-1.  No  se  llama  directamente  a  la  función  resta,  se 
+    tiene una variable función para ello
+ */
+function suma(int $a, int $b)
+{
+    return $a + $b;
+}
+ 
+function resta(int $a, int $b)
+{
+    return $a - $b;
+}
+ 
+function multiplicacion(int $a, int $b)
+{
+    return $a * $b;
+}
+ 
+function hacerOperacion(string $operacion, int $a, int $b)
+{
+    // Solo se permiten estas tres operaciones (evita llamar a cualquier otra función por error)
+    $operacionesValidas = ['suma', 'resta', 'multiplicacion'];
+ 
+    if (!in_array($operacion, $operacionesValidas, true)) {
+        return false;
+    }
+ 
+    // Variable-función: el nombre de la función está guardado en una variable
+    $funcion = $operacion;
+ 
+    return $funcion($a, $b);
+}
