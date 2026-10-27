@@ -27,7 +27,12 @@ function cabecera()
 //vista
 function cuerpo()
 {
-    
-    $i1 = new InstrumentoBase("guitarra");
-    echo "i1 -> descripción: '" . $i1->getDescripcion() . "', edad: " . $i1->getEdad() . "\n";
+    /**
+     * Prueba de Ejercicio 1
+     */
+    $g = new Guitarra("Guitarra española");
+    $p = new Piano("Piano de cola", 3);
+
+    echo $g;
+    echo "<br>" . $p;
 }
