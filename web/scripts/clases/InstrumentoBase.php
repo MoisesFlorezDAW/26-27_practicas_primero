@@ -12,7 +12,7 @@ abstract class InstrumentoBase
     protected int $edad = 10;
 
     // Orden de creación de esta instancia
-    private int $orden;
+    protected int $orden;
 
     public function __construct(string $descripcion = "", int $edad = 10)
     {

@@ -2,12 +2,12 @@
 include_once(dirname(__FILE__) . "../../../cabecera.php");
 $barraUbi = [
     [
-        "TEXTO"=>"Inicio",
-        "LINK" =>"/index.php"
+        "TEXTO" => "Inicio",
+        "LINK" => "/index.php"
     ],
     [
-        "TEXTO"=>"Relacion 4",
-        "LINK" =>"index.php"
+        "TEXTO" => "Relacion 4",
+        "LINK" => "index.php"
     ]
 ];
 //controlador
@@ -21,8 +21,7 @@ finCuerpo();
 // **********************************************************
 
 //vista
-function cabecera() 
-{}
+function cabecera() {}
 
 //vista
 function cuerpo()
@@ -30,9 +29,23 @@ function cuerpo()
     /**
      * Prueba de Ejercicio 1
      */
-    $g = new Guitarra("Guitarra española");
-    $p = new Piano("Piano de cola", 3);
+    echo "<h2>Prueba ejercicio 5 (Abs InstrumentoBase, Interface IFabricable, InstrumentoViento, Flauta)</h2>";
+    $flauta1 = Flauta::CrearDesdeArray([
+        "material" => "metal",
+        "edad" => 8
+    ]);
 
-    echo $g;
-    echo "<br>" . $p;
+    echo $flauta1 . "<br>";
+    echo $flauta1->sonido() . "<br>";
+    echo $flauta1->afinar() . "<br>";
+
+    $flauta2 = clone $flauta1;
+    echo "<hr>". $flauta2 . "<br>";
+
+    // Creacion y prueba de los objetos del ejercicio 5
+    $persona1 = new Persona();
+    $persona2 = new Persona("Juan perez", "16/08/2003", "Calle Toronjo", "Sevilla", EstadoCivil::PAREJA);
+    echo "<h2>Prueba ejercicio 5 (Enum EstadoCivil, Clase Persona)</h2>";
+    echo $persona1;
+    echo "<hr><br>" . $persona2;
 }
