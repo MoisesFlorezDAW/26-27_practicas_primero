@@ -37,6 +37,15 @@ body {
     color: black;
 }
 
+#barraMenu ul{
+    list-style: none;
+    display: flex;
+}
+
+#barraMenu ul li{
+    margin: 1%;
+    padding: 1%;
+}
 
 .boton{
     background-color: blue;
