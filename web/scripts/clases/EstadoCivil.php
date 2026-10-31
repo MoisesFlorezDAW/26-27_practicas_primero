@@ -1,20 +1,36 @@
 <?php
-enum EstadoCivil: int{
+
+/**
+ * Estados civiles posibles de una persona.
+ */
+enum EstadoCivil: int
+{
     case SOLTERO = 10;
     case CASADO = 20;
     case PAREJA = 30;
     case VIUDO = 40;
 
-    public function descripcion(){
+    /**
+     * @return string Nombre del estado
+     */
+    public function descripcion(): string
+    {
         return $this->name;
     }
 
-    public function valor(){
+    /**
+     * @return int Valor numérico del estado
+     */
+    public function valor(): int
+    {
         return $this->value;
     }
-    
-    public static function casos(): array {
-        return self::cases();        
+
+    /**
+     * @return EstadoCivil[] Todos los casos del enum
+     */
+    public static function casos(): array
+    {
+        return self::cases();
     }
-    
 }

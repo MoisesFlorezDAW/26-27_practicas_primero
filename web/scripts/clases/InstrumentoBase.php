@@ -1,137 +1,151 @@
 <?php
-// Con métodos abstractos la clase tiene que ser abstracta.
+/**
+ * Clase base abstracta para los instrumentos.
+ */
 abstract class InstrumentoBase
 {
-    // Variable de clase protegida: cuántos instrumentos se han creado
-    protected static int $contador = 0;
+    /** @var int Número de instrumentos creados */
+    protected static int $_contador = 0;
 
-    // No accesible directamente: solo mediante get/set públicos
-    private string $descripcion;
+    /** @var string Descripción (solo accesible mediante get/set) */
+    private string $_descripcion = "";
 
-    // No accesible desde el exterior, sí desde las clases descendientes
-    protected int $edad = 10;
+    /** @var int Edad en años */
+    protected int $_edad = 10;
 
-    // Orden de creación de esta instancia
-    protected int $orden;
+    /** @var int Orden de creación de esta instancia */
+    protected int $_orden = 0;
 
+    /**
+     * Si la edad es negativa se conserva el valor por defecto.
+     *
+     * @param string $descripcion Descripción del instrumento
+     * @param int $edad Edad en años (no negativa)
+     */
     public function __construct(string $descripcion = "", int $edad = 10)
     {
-        $this->descripcion = $descripcion;
-        $this->edad = $edad;
+        $this->_descripcion = $descripcion;
 
-        // Se asigna el número de orden actual (empezando en 1) y se incrementa el contador
-        $this->orden = ++self::$contador;
+        if ($edad >= 0) {
+            $this->_edad = $edad;
+        }
+
+        $this->_orden = ++self::$_contador;
     }
 
+    /**
+     * @return string Descripción del instrumento
+     */
     public function getDescripcion(): string
     {
-        return $this->descripcion;
+        return $this->_descripcion;
     }
 
+    /**
+     * @param string $descripcion Nueva descripción
+     * @return void
+     */
     public function setDescripcion(string $descripcion): void
     {
-        $this->descripcion = $descripcion;
+        $this->_descripcion = $descripcion;
     }
 
+    /**
+     * @return int Edad del instrumento
+     */
     public function getEdad(): int
     {
-        return $this->edad;
+        return $this->_edad;
     }
 
+    /**
+     * @return int Orden de creación de la instancia
+     */
     public function getOrden(): int
     {
-        return $this->orden;
+        return $this->_orden;
     }
 
+    /**
+     * @return int Total de instrumentos creados
+     */
     public static function getTotal(): int
     {
-        return self::$contador;
+        return self::$_contador;
     }
 
-    // Aumenta la edad en un año
+    /**
+     * Aumenta la edad en un año.
+     *
+     * @return void
+     */
     public function envejecer(): void
     {
-        $this->edad++;
+        $this->_edad++;
     }
 
-    // Devuelve una frase que representa el sonido
+    /**
+     * @return string Frase que representa el sonido
+     */
     abstract public function sonido(): string;
 
-    // Devuelve una cadena con los pasos necesarios para afinar el instrumento
+    /**
+     * @return string Pasos necesarios para afinar el instrumento
+     */
     abstract public function afinar(): string;
 
-    public function __toString(): string
+    /**
+     * Sobrecarga deshabilitada: leer una propiedad inexistente devuelve null.
+     *
+     * @param string $nombre Nombre de la propiedad
+     * @return mixed Siempre null
+     */
+    public function __get(string $nombre): mixed
     {
-        return "instrumento con descripción " . $this->descripcion
-            . ", instancia " . $this->orden
-            . " de un total de " . self::$contador
-            . ". Tiene " . $this->edad . " años"
-            . ". La clase es " . get_class($this);
+        return null;
     }
 
-    // No se definen __get ni __set: no hay sobrecarga de propiedades.
+    /**
+     * Sobrecarga deshabilitada: la asignación se ignora.
+     *
+     * @param string $nombre Nombre de la propiedad
+     * @param mixed $valor Valor que se intenta asignar
+     * @return void
+     */
+    public function __set(string $nombre, mixed $valor): void
+    {
+    }
+
+    /**
+     * Sobrecarga deshabilitada: ninguna propiedad dinámica existe.
+     *
+     * @param string $nombre Nombre de la propiedad
+     * @return bool Siempre false
+     */
+    public function __isset(string $nombre): bool
+    {
+        return false;
+    }
+
+    /**
+     * Sobrecarga deshabilitada: no hace nada.
+     *
+     * @param string $nombre Nombre de la propiedad
+     * @return void
+     */
+    public function __unset(string $nombre): void
+    {
+    }
+
+    /**
+     * @return string Representación textual del instrumento
+     */
+    public function __toString(): string
+    {
+        return "instrumento con descripción " . $this->_descripcion
+            . ", instancia " . $this->_orden
+            . " de un total de " . self::$_contador
+            . ". Tiene " . $this->_edad . " años"
+            . ". La clase es " . get_class($this);
+    }
 }
-
-/**--------------- Clase no abstracta(prueba) */
-// class InstrumentoBase{
-//     private string $descripcion;
-//     //protected static int $elemCreados;
-//     private int $orden;
-    
-//     // No accesible
-//     protected int $edad;
-
-//     public function __construct(string $descripcion = "", int $edad=10){
-//         $this->descripcion = $descripcion;
-//         $this->edad = $edad;
-
-//       //   $this->orden = ++self::$elemCreados;
-//     }
-
-//     public function getDescripcion(): string
-//     {
-//         return $this->descripcion;
-//     }
- 
-//     public function setDescripcion(string $descripcion): void
-//     {
-//         $this->descripcion = $descripcion;
-//     }
- 
-//     public function getEdad(): int
-//     {
-//         return $this->edad;
-//     }
- 
-//     public function getOrden(): int
-//     {
-//         return $this->orden;
-//     }
- 
-//     public static function getTotal(): int
-//     {
-//         //return self::$elemCreados;
-//     }
- 
-//     public function Sonido() : string{
-//         return "do, re, mi";       
-//     }
-
-//     public function afinar() : string{
-//         return "dgiweghiorgherhneinhi";
-//     }
-
-//     public function envejecer() : void{
-//         $this->edad+=1;
-//     }
-
-//     public function __toString()
-//     {   
-//     return "instrumento con descripción " . $this->descripcion
-//             . ", instancia " . $this->orden
-//             //. " de un total de " . self::$elemCreados
-//             . ". Tiene " . $this->edad . " años"
-//             . ". La clase es " . get_class($this);
-
-//     }    
-// }
