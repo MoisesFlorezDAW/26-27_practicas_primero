@@ -1,6 +1,8 @@
 <?php
     namespace VAL_NORMAL;
 
+use DateTime;
+
 function validaEntero(&$var, int $min, int $max, int $defecto): bool
 {
     if (is_numeric($var) && (int)$var == $var) {
@@ -24,6 +26,28 @@ function validaEntero(&$var, int $min, int $max, int $defecto): bool
     }
 
     function validaFecha(string &$var, string $defecto): bool{
-        $var = $defecto;
+    
+    $d = DateTime::createFromFormat('d/m/Y', $var);
+    
+    if($d->format('d/m/Y')==$var){
         return true;
+    }
+    $var = $defecto;
+
+    return false;
+    }
+
+    function validaHora(string &$var, string $defecto){
+    $h = DateTime::createFromFormat('H:i:s', $var);
+
+    if($h->format('H:i:s')==$var){
+        return true;
+    }
+    $var = $defecto;
+
+    return false;
+    }
+
+    function validaEmail(string &$var, int $longitud, string $defecto){
+
     }

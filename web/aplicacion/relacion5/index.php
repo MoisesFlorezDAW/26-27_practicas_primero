@@ -29,10 +29,11 @@ finCuerpo();
 function cabecera() {}
 
 //vista
-//vista
 function cuerpo()
 {
     // Enlace a pruebas de metodos de la librerias
     echo "<a href='pruebaLibrerias.php'  style='color: Red; font-weight: bold;
     position: relative; left: 75%;'>Prueba de librerias</a>";
+
+    
 }

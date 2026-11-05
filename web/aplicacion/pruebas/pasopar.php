@@ -1,6 +1,5 @@
 <?php
 include_once(dirname(__FILE__) . "/../../cabecera.php");
-
 //controlador
 
 //datos basicos
@@ -13,36 +12,44 @@ $basicos=[
 ];
 
 //relleno otras
-$otras = rellenarOtras();
+$otras=rellenarOtras();
+
+
 
 //dibuja la plantilla de la vista
-inicioCabecera("APLICACION PRIMER TRIMESTRE");
+inicioCabecera("Mi aplicacion");
 cabecera();
 finCabecera();
-inicioCuerpo("paso parametros");
-cuerpo($basicos, $otras); //llamo a la vista
+inicioCuerpo("PASO PARAMETROs");
+cuerpo($basicos, $otras);  //llamo a la vista
 finCuerpo();
-
 // **********************************************************
-//vista
-function cabecera() {}
 
 //vista
-function cuerpo($bas, $ot){
+function cabecera() 
+{
+    ?>
+    <!-- esto va en el head -->
+     <?php   
+
+
+
+}
+
+//vista
+function cuerpo($bas, $ot)
+{
 ?>
     <br><br>
-    Elemento de pruebas
-    <a href="index.php">inicio</a>
-
-    <?php 
-    
-    echo "Mi nombre es {$bas["nombre"]} de {$bas["edad"]} años".PHP_EOL;
-    echo "Con otros datos {$ot}";    
-
-?>
 
 <?php
+
+
+    echo "Mi nombre es {$bas["nombre"]} de {$bas["edad"]} años".PHP_EOL;
+    "Con otros datos {$ot}";
+
 }
+
 
 function rellenarOtras(){
     return "de 2 DAW";
