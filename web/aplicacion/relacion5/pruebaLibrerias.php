@@ -55,8 +55,6 @@ function cuerpo()
     }
 
     echo "<p style='color: blue'>PRUEBA VAL_FILTER - validaEntero<br><p>" . PHP_EOL;
-    $edad = 25;
-    $edadError = 130;
     if (\VAL_FILTER\validaEntero($edad, 0, 120, 18)) {
         echo "Edad valida: " . $edad . "<br>" . PHP_EOL;
     } else {
@@ -86,8 +84,6 @@ function cuerpo()
     }
 
     echo "<p style='color: blue'>PRUEBA VAL_FILTER - validaReal<br><p>" . PHP_EOL;
-    $dinero = 23.65;
-    $dineroFuera = 40.0;
     if (\VAL_FILTER\validaReal($dinero, 0, 30, 10.0)) {
         echo "Cantidad valida: " . $dinero . "<br>" . PHP_EOL;
     } else {
@@ -117,8 +113,6 @@ function cuerpo()
     }
 
     echo "<p style='color: blue'>PRUEBA VAL_FILTER - validaFecha<br><p>" . PHP_EOL;
-    $fecha = "1/2/2023";
-    $fechaError = "31/02/2023";
     if (\VAL_FILTER\validaFecha($fecha, "01/01/1970")) {
         echo "Fecha valida (1/2/2023). Fecha saneada: " . $fecha . "<br>" . PHP_EOL;
     } else {
@@ -148,8 +142,6 @@ function cuerpo()
     }
 
     echo "<p style='color: blue'>PRUEBA VAL_FILTER - validaHora<br><p>" . PHP_EOL;
-    $hora = "0:5:1";
-    $horaError = "25:00:00";
     if (\VAL_FILTER\validaHora($hora, "00:00:00")) {
         echo "Hora valida (0:5:1). Hora saneada: " . $hora . "<br>" . PHP_EOL;
     } else {
@@ -165,7 +157,7 @@ function cuerpo()
      * validaEmail
      */
     echo "<p style='color: blue'>PRUEBA VAL_NORMAL - validaEmail (defecto sin@email.com)<br><p>" . PHP_EOL;
-    $email = "usuario@dominio.com";
+    $email = "moises@gmail.com";
     $emailError = "usuario@@dominio";
     if (\VAL_NORMAL\validaEmail($email, "sin@email.com")) {
         echo "Email valido: " . $email . "<br>" . PHP_EOL;
@@ -179,8 +171,6 @@ function cuerpo()
     }
 
     echo "<p style='color: blue'>PRUEBA VAL_FILTER - validaEmail<br><p>" . PHP_EOL;
-    $email = "usuario@dominio.com";
-    $emailError = "usuario@@dominio";
     if (\VAL_FILTER\validaEmail($email, "sin@email.com")) {
         echo "Email valido: " . $email . "<br>" . PHP_EOL;
     } else {
@@ -210,8 +200,6 @@ function cuerpo()
     }
 
     echo "<p style='color: blue'>PRUEBA VAL_FILTER - validaCadena<br><p>" . PHP_EOL;
-    $cadena = "Hola";
-    $cadenaError = "Esta cadena es demasiado larga";
     if (\VAL_FILTER\validaCadena($cadena, 10, "defecto")) {
         echo "Cadena valida: " . $cadena . "<br>" . PHP_EOL;
     } else {
@@ -243,8 +231,6 @@ function cuerpo()
     }
 
     echo "<p style='color: blue'>PRUEBA VAL_FILTER - validaExpresion<br><p>" . PHP_EOL;
-    $codigo = "ABC1234";
-    $codigoError = "abc12";
     if (\VAL_FILTER\validaExpresion($codigo, $expresion, "XXX0000")) {
         echo "Codigo valido: " . $codigo . "<br>" . PHP_EOL;
     } else {
