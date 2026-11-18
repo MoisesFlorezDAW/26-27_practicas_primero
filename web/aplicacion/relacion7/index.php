@@ -12,6 +12,13 @@ $barraUbi = [
     ]
 ];
 
+$datos = [
+    "x" => "",
+    "y" => "",
+    "color"=>"",
+    "grosor"=>""
+];
+
 //dibuja la plantilla de vista
 inicioCabecera("Relacion 7");
 cabecera();
@@ -26,5 +33,31 @@ function cabecera() {}
 //vista
 function cuerpo()
 {
-    
+    formulario();
+}
+
+function formulario(){
+    ?>
+        <form action="post" style="align-items: normal;">
+            <label for="puntoX">Coordenada X: </label>
+            <input type="text" name="puntoX" id="puntoX" required> <br>
+            <label for="puntoY">Coordenada Y: </label>
+            <input type="text" name="puntoY" id="puntoY" required>
+
+            <br><select name="colores" id="color">
+                <option value="">Seleccione color</option>
+                <?php
+                    foreach(Punto::COLORES as $indice => $color)
+                        echo "<option value='" . $indice . "' >".
+                                mb_strtoupper($indice) . "</option>";
+                ?>
+            </select> 
+            <input type="radio" name="grosor" id="grosor1">Fino
+            <input type="radio" name="grosor" id="grosor2">Medio
+            <input type="radio" name="grosor" id="grosor3">Gordo
+
+            <br>
+            <input type="button" value="Guardar">
+        </form>
+    <?php
 }

@@ -1,5 +1,5 @@
 <?php
-
+$puntos= [];
 function validaEntero(int &$var, int $min, int $max, int $defecto): bool {
     $r = filter_var($var, FILTER_VALIDATE_INT,
         ['options' => ['min_range' => $min, 'max_range' => $max]]);
