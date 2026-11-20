@@ -14,6 +14,64 @@ $barraUbi = [
     ]
 ];
 
+/////////////////////////////////
+
+$fichero = "puntos_192_168_2_219_chrome.dat";
+
+
+$fichero = "datos/puntos.dat";
+
+if (file_exists($fichero)) {
+
+    $fp = fopen($fichero, "r");
+
+    while (($datos = fgetcsv($fp, 0, ";")) !== false) {
+
+        if (count($datos) === 4) {
+
+            $puntos[] = new Punto(
+                (int)$datos[0], // x
+                (int)$datos[1], // y
+                $datos[2],      // color
+                (int)$datos[3]  // grosor
+            );
+        }
+    }
+
+    fclose($fp);
+}
+
+/////////////////////////////////
+
+$nombreFicher = RUTABASE . "/imagenes/puntos/192_168_2_119_jpeg";
+
+//$ip = str_replace(".", "_", $_SERVER["REMOTE_ADDR"]);
+
+$crear = true;
+
+if ($crear) {
+
+    
+$imagen = imagecreatetruecolor(220, 220);
+
+// Colores
+$blanco = imagecolorallocate($imagen, 255, 255, 255);
+$azul   = imagecolorallocate($imagen, 0, 0, 255);
+
+// Fondo de la imagen
+imagefill($imagen, 0, 0, $blanco);
+
+// Grosor del borde
+imagesetthickness($imagen, 5);
+
+// Rectángulo blanco con borde azul grueso
+imagerectangle($imagen, 10, 10, 210, 210, $azul);
+
+    // Guardar la imagen
+    imagejpeg($imagen, $nombreFicher);
+}
+
+
 function leeCadena(string $clave): string
 {
     if (isset($_POST[$clave]) && is_string($_POST[$clave])) {
@@ -34,15 +92,17 @@ $guardado = false;
 
 if (isset($_POST["guardar"])) {
     $datos["x"] = leeCadena("x");
+
+    $datos["x"] = leeCadena("x");
     $x = filter_var($datos["x"], FILTER_VALIDATE_INT);
-    if ($x === false || !validaEntero($x, 0, 20000, 100)) {
+    if ($x === false || !validaEntero($x, 0, 20000, 0)) {
         $errores["x"][] = "La coordenada x debe ser un entero entre 0 y 20000";
     }
 
-    $datos["y"] = leeCadena("x");
-    $y = filter_var($datos["x"], FILTER_VALIDATE_INT);
-    if ($x === false || !validaEntero($x, 0, 20000, 100)) {
-        $errores["x"][] = "La coordenada y debe ser un entero entre 0 y 20000";
+    $datos["y"] = leeCadena("y");
+    $y = filter_var($datos["y"], FILTER_VALIDATE_INT);
+    if ($y === false || !validaEntero($y, 0, 20000, 0)) {
+        $errores["y"][] = "La coordenada y debe ser un entero entre 0 y 20000";
     }
 
     $datos["color"] = leeCadena("color");
@@ -51,13 +111,15 @@ if (isset($_POST["guardar"])) {
         $errores["colores"][] = "Debe seleccionarse un color";
     }
 
+    $datos["grosor"] = leeCadena("grosor");
     $grosor = filter_var(leeCadena("grosor"), FILTER_VALIDATE_INT);
     if ($grosor === false || !validaRango($grosor, Punto::GROSORES, 2)) {
         $errores["grosor"][] = "Debe seleccionarse un grosor";
     }
 
     if (!$errores) {
-        $puntos = [$x, $y, $color, $grosor];
+        //$puntos[] = new Punto($x, $y, $color, $grosor);
+        array_push($puntos, new Punto($x, $y, $color, $grosor));
         $guardado = true;
         $datos = [
             "x" => "",
@@ -66,6 +128,10 @@ if (isset($_POST["guardar"])) {
             "grosor" => 0
         ];
     }
+}
+
+if(isset($_POST["descargar"])){
+
 }
 
 //dibuja la plantilla de vista
@@ -82,12 +148,11 @@ function cabecera() {}
 //vista
 function cuerpo(array $puntos, array $datos, array $errores, bool $guardado)
 {
-    if ($guardado) {
-        echo "<h3>Punto guardado correctamente</h3>" . PHP_EOL;}
+    formulario($datos, $errores, $puntos);
 
-    formulario($datos, $errores);
-
-    almacenaPuntos($puntos);
+    if ($guardado == true) {
+        echo "<h3>Punto guardado correctamente</h3>" . PHP_EOL;
+    }
 }
 
 function muestraErrores(array $errores, string $campo)
@@ -102,20 +167,20 @@ function muestraErrores(array $errores, string $campo)
     }
 }
 
-function formulario(array $datos, array $errores)
+function formulario(array $datos, array $errores, array $puntos)
 {
 ?>
-    <form action="post">
+    <form action="index.php" method="post">
         <label for="puntoX">Coordenada X: </label>
         <input type="text" name="x" id="x" value="<?= $datos["x"]; ?>" required> <br>
         <?php muestraErrores($errores, "x"); ?>
         <label for="puntoY">Coordenada Y: </label>
-        <input type="text" name="x" id="y" value="<?= $datos["y"]; ?>" required>
+        <input type="text" name="y" id="y" value="<?= $datos["y"]; ?>" required>
         <?php muestraErrores($errores, "y"); ?>
 
         <br>
-        <label for="colores">Colores: </label>
-        <select name="colores" id="color">
+        <label for="color">Colores: </label>
+        <select name="color" id="color">
             <option value="">Seleccione color</option>
             <?php
             foreach (Punto::COLORES as $clave => $info) {
@@ -138,23 +203,23 @@ function formulario(array $datos, array $errores)
         <?php muestraErrores($errores, "grosor"); ?>
 
         <br>
-        <input type="submit" name="guardar" value="Guardar"> 
+        <input type="submit" name="guardar" value="Guardar">
     </form>
-<?php
-}
 
-function almacenaPuntos($puntos){
-    echo "<textarea 
-    id='comentario'
-    rows='5' 
-    cols='40' 
-    placeholder='Puntos...'>"; 
-        foreach($puntos as $indice => $punto){
-            echo $indice . " - " . $punto->getX() . " - ". $punto->getY() . 
-            " - " . Punto::COLORES[$punto->getColor()]["nombre"] . " - " . 
-            Punto::GROSORES[$punto->getGrosor()] . PHP_EOL;
+    <textarea rows="5" cols="45" style="text-align: center;">
+        <?php
+        foreach ($puntos as $indice => $punto) {
+            echo $punto->getX() . " - " . $punto->getY() .
+                " - " . Punto::COLORES[$punto->getColor()]["nombre"] . " - " .
+                Punto::GROSORES[$punto->getGrosor()] . PHP_EOL;
         }
-
-    echo "</textarea>" . PHP_EOL;
+        ?>
+    </textarea>
+    <br><br>
+    <img src="../../imagenes/puntos/192_168_2_119_chrome.jpg"
+        alt="Imagen de puntos">
+    <br>
+    <a href="?descargar">Descargar</a>
+<?php
 
 }
