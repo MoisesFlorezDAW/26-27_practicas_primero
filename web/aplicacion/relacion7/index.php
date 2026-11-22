@@ -15,62 +15,57 @@ $barraUbi = [
 ];
 
 /////////////////////////////////
-
 $fichero = "puntos_192_168_2_219_chrome.dat";
 
-
-$fichero = "datos/puntos.dat";
-
 if (file_exists($fichero)) {
+    $lineas = file($fichero, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 
-    $fp = fopen($fichero, "r");
+    foreach ($lineas as $linea) {
+        $campos = explode(';', $linea);
+        if (count($campos) != 4) {
+            continue;
+        }
+        [$x, $y, $color, $grosor] = $campos;
 
-    while (($datos = fgetcsv($fp, 0, ";")) !== false) {
-
-        if (count($datos) === 4) {
-
-            $puntos[] = new Punto(
-                (int)$datos[0], // x
-                (int)$datos[1], // y
-                $datos[2],      // color
-                (int)$datos[3]  // grosor
-            );
+        try {
+            $puntos[] = new Punto((int)$x, (int)$y, mb_trim($color), (int)$grosor);
+        } catch (Exception $ex) {
+            echo "Linea ignorada (" . $linea . "): " . $ex->getMessage() . "<br>" . PHP_EOL;
         }
     }
-
-    fclose($fp);
 }
+
 
 /////////////////////////////////
 
-$nombreFicher = RUTABASE . "/imagenes/puntos/192_168_2_119_jpeg";
+$nombreFicher = "../../imagenes/puntos/192_168_2_119_chrome.jpg";
 
 //$ip = str_replace(".", "_", $_SERVER["REMOTE_ADDR"]);
 
-$crear = true;
+$imagen = imagecreatetruecolor(250, 250);
 
-if ($crear) {
 
-    
-$imagen = imagecreatetruecolor(220, 220);
+function dibujarLienzo(GdImage $imagen)
+{
+    $blanco = imagecolorallocate($imagen, 255, 255, 255);
+    $azul = imagecolorallocate($imagen, 0, 0, 250);
 
-// Colores
-$blanco = imagecolorallocate($imagen, 255, 255, 255);
-$azul   = imagecolorallocate($imagen, 0, 0, 255);
+    imagefill($imagen, 0, 0, $blanco);
 
-// Fondo de la imagen
-imagefill($imagen, 0, 0, $blanco);
-
-// Grosor del borde
-imagesetthickness($imagen, 5);
-
-// Rectángulo blanco con borde azul grueso
-imagerectangle($imagen, 10, 10, 210, 210, $azul);
-
-    // Guardar la imagen
-    imagejpeg($imagen, $nombreFicher);
+    imagesetthickness($imagen, 10);
+    imagerectangle($imagen, 5, 5, 245, 245, $azul);
 }
 
+function dibujarX(GdImage $imagen, int $x, int $y, string $color, int $grosor)
+{
+    $rgb = Punto::COLORES[$color]["rgb"];
+    $colorDefinido = imagecolorallocate($imagen, $rgb[0], $rgb[1], $rgb[2]);
+
+    imagesetthickness($imagen, $grosor);
+
+    imageline($imagen, $x - 5, $y - 5, $x + 5, $y + 5, $colorDefinido);
+    imageline($imagen, $x - 5, $y + 5, $x + 5, $y - 5, $colorDefinido);
+}
 
 function leeCadena(string $clave): string
 {
@@ -89,6 +84,8 @@ $datos = [
 
 $errores = [];
 $guardado = false;
+$errorBorrar = "";
+$borrado = false;
 
 if (isset($_POST["guardar"])) {
     $datos["x"] = leeCadena("x");
@@ -108,7 +105,7 @@ if (isset($_POST["guardar"])) {
     $datos["color"] = leeCadena("color");
     $color = $datos["color"];
     if (!validaRango($color, Punto::COLORES, 2)) {
-        $errores["colores"][] = "Debe seleccionarse un color";
+        $errores["color"][] = "Debe seleccionarse un color";
     }
 
     $datos["grosor"] = leeCadena("grosor");
@@ -118,8 +115,8 @@ if (isset($_POST["guardar"])) {
     }
 
     if (!$errores) {
-        //$puntos[] = new Punto($x, $y, $color, $grosor);
-        array_push($puntos, new Punto($x, $y, $color, $grosor));
+        $puntoCreado = new Punto($x, $y, $color, $grosor);
+        array_push($puntos, $puntoCreado);
         $guardado = true;
         $datos = [
             "x" => "",
@@ -127,12 +124,44 @@ if (isset($_POST["guardar"])) {
             "color" => "",
             "grosor" => 0
         ];
+        $archivo = fopen($fichero, "a+");
+
+        if($archivo!=false){
+            fwrite($archivo, $puntoCreado->getX() . ";" . $puntoCreado->getY().";" . 
+            $puntoCreado->getColor() . ";" . $puntoCreado->getGrosor() . PHP_EOL);
+        }
+        fclose($archivo);
+    }else{
+        $errores["general"][] = "No se pudo abrir el archivo";
     }
 }
 
-if(isset($_POST["descargar"])){
-
+if (isset($_POST["borrarPunto"])) {
+    $indiceBorrar = false;
+    if (isset($_POST["borrar"]) && is_string($_POST["borrar"])) {
+        $indiceBorrar = filter_var($_POST["borrar"], FILTER_VALIDATE_INT);
+    }
+    if ($indiceBorrar === false || !array_key_exists($indiceBorrar, $puntos)) {
+        $errorBorrar = "Debe seleccionarse un punto valido";
+    } else {
+        unset($puntos[$indiceBorrar]);
+        $borrado = true;
+    }
 }
+
+if ($borrado) {
+    $lineasNuevas = [];
+    foreach ($puntos as $punto) {
+        $lineasNuevas[] = $punto->getX() . ";" . $punto->getY() . ";" . $punto->getColor() . ";" . $punto->getGrosor();
+    }
+    file_put_contents($fichero, implode(PHP_EOL, $lineasNuevas) . PHP_EOL);
+}
+
+dibujarLienzo($imagen);
+foreach ($puntos as $punto) {
+    dibujarX($imagen, $punto->getX(), $punto->getY(), $punto->getColor(), $punto->getGrosor());
+}
+imagejpeg($imagen, $nombreFicher);
 
 //dibuja la plantilla de vista
 inicioCabecera("Relacion 7");
@@ -140,18 +169,23 @@ cabecera();
 finCabecera();
 
 inicioCuerpo("Relacion 7 - Primer Trimestre", $barraUbi);
-cuerpo($puntos, $datos, $errores, $guardado); // llamo a la vista
+cuerpo($puntos, $datos, $errores, $guardado, $borrado, $errorBorrar, $nombreFicher);
 finCuerpo();
 // vista
 function cabecera() {}
 
 //vista
-function cuerpo(array $puntos, array $datos, array $errores, bool $guardado)
+
+
+function cuerpo(array $puntos, array $datos, array $errores, bool $guardado, bool $borrado, string $errorBorrar, string $nombreFicher)
 {
-    formulario($datos, $errores, $puntos);
+    formulario($datos, $errores, $puntos, $errorBorrar, $nombreFicher);
 
     if ($guardado == true) {
         echo "<h3>Punto guardado correctamente</h3>" . PHP_EOL;
+    }
+    if ($borrado) {
+        echo "<h3>Punto borrado correctamente</h3>" . PHP_EOL;
     }
 }
 
@@ -167,15 +201,16 @@ function muestraErrores(array $errores, string $campo)
     }
 }
 
-function formulario(array $datos, array $errores, array $puntos)
+function formulario(array $datos, array $errores, array $puntos, string $errorBorrar, string $nombreFicher)
 {
 ?>
+<br>
     <form action="index.php" method="post">
-        <label for="puntoX">Coordenada X: </label>
-        <input type="text" name="x" id="x" value="<?= $datos["x"]; ?>" required> <br>
+        <label for="x">Coordenada X: </label>
+        <input type="text" name="x" id="x" value="<?= $datos["x"]; ?>"> <br>
         <?php muestraErrores($errores, "x"); ?>
-        <label for="puntoY">Coordenada Y: </label>
-        <input type="text" name="y" id="y" value="<?= $datos["y"]; ?>" required>
+        <label for="y">Coordenada Y: </label>
+        <input type="text" name="y" id="y" value="<?= $datos["y"]; ?>">
         <?php muestraErrores($errores, "y"); ?>
 
         <br>
@@ -206,6 +241,27 @@ function formulario(array $datos, array $errores, array $puntos)
         <input type="submit" name="guardar" value="Guardar">
     </form>
 
+    <form action="index.php" method="post">
+        <select name="borrar" id="borrar">
+            <option value="">Seleccione un punto</option>
+            <?php
+            foreach ($puntos as $indice => $punto) {
+                echo "<option value='" . $indice . "'>"
+                    . $indice . " - " . $punto->getX() . " - " . $punto->getY()
+                    . " - " . Punto::COLORES[$punto->getColor()]["nombre"]
+                    . " - " . Punto::GROSORES[$punto->getGrosor()]
+                    . "</option>" . PHP_EOL;
+            }
+            ?>
+        </select>
+        <input type="submit" name="borrarPunto" value="Borrar">
+        <?php
+        if ($errorBorrar != "") {
+            echo "<div class='error'>" . $errorBorrar . "</div>";
+        }
+        ?>
+    </form>
+
     <textarea rows="5" cols="45" style="text-align: center;">
         <?php
         foreach ($puntos as $indice => $punto) {
@@ -216,10 +272,11 @@ function formulario(array $datos, array $errores, array $puntos)
         ?>
     </textarea>
     <br><br>
-    <img src="../../imagenes/puntos/192_168_2_119_chrome.jpg"
+    <img src="<?= $nombreFicher ?>"
         alt="Imagen de puntos">
     <br>
     <a href="?descargar">Descargar</a>
+
 <?php
 
 }
