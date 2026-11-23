@@ -14,58 +14,12 @@ $barraUbi = [
     ]
 ];
 
-/////////////////////////////////
-$fichero = "puntos_192_168_2_219_chrome.dat";
+$sufijo = dameSufijo();
+$fichero = dirname(__FILE__) . "/puntos_" . $sufijo . ".dat";
+$nombreFicher = "../../imagenes/puntos/imagen_" . $sufijo . ".jpg";
+$rutaImagen = dirname(__FILE__) . "/" . $nombreFicher;
 
-if (file_exists($fichero)) {
-    $lineas = file($fichero, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-
-    foreach ($lineas as $linea) {
-        $campos = explode(';', $linea);
-        if (count($campos) != 4) {
-            continue;
-        }
-        [$x, $y, $color, $grosor] = $campos;
-
-        try {
-            $puntos[] = new Punto((int)$x, (int)$y, mb_trim($color), (int)$grosor);
-        } catch (Exception $ex) {
-            echo "Linea ignorada (" . $linea . "): " . $ex->getMessage() . "<br>" . PHP_EOL;
-        }
-    }
-}
-
-
-/////////////////////////////////
-
-$nombreFicher = "../../imagenes/puntos/192_168_2_119_chrome.jpg";
-
-//$ip = str_replace(".", "_", $_SERVER["REMOTE_ADDR"]);
-
-$imagen = imagecreatetruecolor(250, 250);
-
-
-function dibujarLienzo(GdImage $imagen)
-{
-    $blanco = imagecolorallocate($imagen, 255, 255, 255);
-    $azul = imagecolorallocate($imagen, 0, 0, 250);
-
-    imagefill($imagen, 0, 0, $blanco);
-
-    imagesetthickness($imagen, 10);
-    imagerectangle($imagen, 5, 5, 245, 245, $azul);
-}
-
-function dibujarX(GdImage $imagen, int $x, int $y, string $color, int $grosor)
-{
-    $rgb = Punto::COLORES[$color]["rgb"];
-    $colorDefinido = imagecolorallocate($imagen, $rgb[0], $rgb[1], $rgb[2]);
-
-    imagesetthickness($imagen, $grosor);
-
-    imageline($imagen, $x - 5, $y - 5, $x + 5, $y + 5, $colorDefinido);
-    imageline($imagen, $x - 5, $y + 5, $x + 5, $y - 5, $colorDefinido);
-}
+$puntos = cargaPuntos($fichero);
 
 function leeCadena(string $clave): string
 {
@@ -79,27 +33,27 @@ $datos = [
     "x" => "",
     "y" => "",
     "color" => "",
-    "grosor" => ""
+    "grosor" => 0
 ];
 
 $errores = [];
 $guardado = false;
 $errorBorrar = "";
 $borrado = false;
+$mensajeSubida = "";
+$anadidos = 0;
 
 if (isset($_POST["guardar"])) {
     $datos["x"] = leeCadena("x");
-
-    $datos["x"] = leeCadena("x");
     $x = filter_var($datos["x"], FILTER_VALIDATE_INT);
-    if ($x === false || !validaEntero($x, 0, 20000, 0)) {
-        $errores["x"][] = "La coordenada x debe ser un entero entre 0 y 20000";
+    if ($x === false || !validaEntero($x, 0, 500, 0)) {
+        $errores["x"][] = "La coordenada x debe ser un entero entre 0 y 500";
     }
 
     $datos["y"] = leeCadena("y");
     $y = filter_var($datos["y"], FILTER_VALIDATE_INT);
-    if ($y === false || !validaEntero($y, 0, 20000, 0)) {
-        $errores["y"][] = "La coordenada y debe ser un entero entre 0 y 20000";
+    if ($y === false || !validaEntero($y, 0, 500, 0)) {
+        $errores["y"][] = "La coordenada y debe ser un entero entre 0 y 500";
     }
 
     $datos["color"] = leeCadena("color");
@@ -108,31 +62,31 @@ if (isset($_POST["guardar"])) {
         $errores["color"][] = "Debe seleccionarse un color";
     }
 
-    $datos["grosor"] = leeCadena("grosor");
     $grosor = filter_var(leeCadena("grosor"), FILTER_VALIDATE_INT);
     if ($grosor === false || !validaRango($grosor, Punto::GROSORES, 2)) {
         $errores["grosor"][] = "Debe seleccionarse un grosor";
+    } else {
+        $datos["grosor"] = $grosor;
     }
 
     if (!$errores) {
         $puntoCreado = new Punto($x, $y, $color, $grosor);
-        array_push($puntos, $puntoCreado);
-        $guardado = true;
-        $datos = [
-            "x" => "",
-            "y" => "",
-            "color" => "",
-            "grosor" => 0
-        ];
         $archivo = fopen($fichero, "a+");
-
-        if($archivo!=false){
-            fwrite($archivo, $puntoCreado->getX() . ";" . $puntoCreado->getY().";" . 
-            $puntoCreado->getColor() . ";" . $puntoCreado->getGrosor() . PHP_EOL);
+        if ($archivo !== false) {
+            fwrite($archivo, $puntoCreado->getX() . ";" . $puntoCreado->getY() . ";" .
+                $puntoCreado->getColor() . ";" . $puntoCreado->getGrosor() . PHP_EOL);
+            fclose($archivo);
+            $puntos[] = $puntoCreado;
+            $guardado = true;
+            $datos = [
+                "x" => "",
+                "y" => "",
+                "color" => "",
+                "grosor" => 0
+            ];
+        } else {
+            $errores["general"][] = "No se pudo abrir el archivo";
         }
-        fclose($archivo);
-    }else{
-        $errores["general"][] = "No se pudo abrir el archivo";
     }
 }
 
@@ -146,46 +100,79 @@ if (isset($_POST["borrarPunto"])) {
     } else {
         unset($puntos[$indiceBorrar]);
         $borrado = true;
+        guardaPuntos($puntos, $fichero);
     }
 }
 
-if ($borrado) {
-    $lineasNuevas = [];
-    foreach ($puntos as $punto) {
-        $lineasNuevas[] = $punto->getX() . ";" . $punto->getY() . ";" . $punto->getColor() . ";" . $punto->getGrosor();
+if (isset($_POST["subir"])) {
+    if (!isset($_FILES["ficheroPuntos"]) || $_FILES["ficheroPuntos"]["error"] !== UPLOAD_ERR_OK) {
+        $mensajeSubida = "No se ha podido subir el fichero";
+    } elseif (mb_strtolower(pathinfo($_FILES["ficheroPuntos"]["name"], PATHINFO_EXTENSION)) !== "dat") {
+        $mensajeSubida = "El fichero debe tener extension dat";
+    } elseif (!is_uploaded_file($_FILES["ficheroPuntos"]["tmp_name"])) {
+        $mensajeSubida = "El fichero no es valido";
+    } else {
+        $lineas = file($_FILES["ficheroPuntos"]["tmp_name"], FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        $descartados = 0;
+        foreach ($lineas as $linea) {
+            $punto = leeLineaPunto($linea);
+            if ($punto === null) {
+                $descartados++;
+            } else {
+                $puntos[] = $punto;
+                $anadidos++;
+            }
+        }
+        if ($anadidos > 0) {
+            guardaPuntos($puntos, $fichero);
+        }
+        $mensajeSubida = "Puntos añadidos: " . $anadidos . ". Lineas descartadas: " . $descartados;
     }
-    file_put_contents($fichero, implode(PHP_EOL, $lineasNuevas) . PHP_EOL);
 }
 
-dibujarLienzo($imagen);
-foreach ($puntos as $punto) {
-    dibujarX($imagen, $punto->getX(), $punto->getY(), $punto->getColor(), $punto->getGrosor());
+if (!file_exists($rutaImagen) || $guardado || $borrado || $anadidos > 0) {
+    $imagen = creaImagen($puntos);
+    imagejpeg($imagen, $rutaImagen);
+    $image=null;
 }
-imagejpeg($imagen, $nombreFicher);
 
-//dibuja la plantilla de vista
 inicioCabecera("Relacion 7");
 cabecera();
 finCabecera();
 
 inicioCuerpo("Relacion 7 - Primer Trimestre", $barraUbi);
-cuerpo($puntos, $datos, $errores, $guardado, $borrado, $errorBorrar, $nombreFicher);
+cuerpo($puntos, $datos, $errores, $guardado, $borrado, $errorBorrar, $nombreFicher, $mensajeSubida);
 finCuerpo();
-// vista
+
 function cabecera() {}
 
-//vista
-
-
-function cuerpo(array $puntos, array $datos, array $errores, bool $guardado, bool $borrado, string $errorBorrar, string $nombreFicher)
-{
+function cuerpo(
+    array $puntos,
+    array $datos,
+    array $errores,
+    bool $guardado,
+    bool $borrado,
+    string $errorBorrar,
+    string $nombreFicher,
+    string $mensajeSubida
+) {
     formulario($datos, $errores, $puntos, $errorBorrar, $nombreFicher);
 
-    if ($guardado == true) {
+    if ($guardado) {
         echo "<h3>Punto guardado correctamente</h3>" . PHP_EOL;
     }
     if ($borrado) {
         echo "<h3>Punto borrado correctamente</h3>" . PHP_EOL;
+    }
+?>
+    <form action="index.php" method="post" enctype="multipart/form-data">
+        <label for="ficheroPuntos">Subir fichero de puntos (dat): </label>
+        <input type="file" name="ficheroPuntos" id="ficheroPuntos" accept=".dat">
+        <input type="submit" name="subir" value="Subir">
+    </form>
+<?php
+    if ($mensajeSubida != "") {
+        echo "<div class='error'>" . $mensajeSubida . "</div>" . PHP_EOL;
     }
 }
 
@@ -196,7 +183,6 @@ function muestraErrores(array $errores, string $campo)
         foreach ($errores[$campo] as $error) {
             echo $error . PHP_EOL;
         }
-
         echo "</div>";
     }
 }
@@ -204,16 +190,15 @@ function muestraErrores(array $errores, string $campo)
 function formulario(array $datos, array $errores, array $puntos, string $errorBorrar, string $nombreFicher)
 {
 ?>
-<br>
+    <br>
     <form action="index.php" method="post">
         <label for="x">Coordenada X: </label>
-        <input type="text" name="x" id="x" value="<?= $datos["x"]; ?>"> <br>
+        <input type="text" name="x" id="x" value="<?= $datos["x"]; ?>"><br>
         <?php muestraErrores($errores, "x"); ?>
         <label for="y">Coordenada Y: </label>
-        <input type="text" name="y" id="y" value="<?= $datos["y"]; ?>">
+        <input type="text" name="y" id="y" value="<?= $datos["y"]; ?>"><br>
         <?php muestraErrores($errores, "y"); ?>
 
-        <br>
         <label for="color">Colores: </label>
         <select name="color" id="color">
             <option value="">Seleccione color</option>
@@ -223,9 +208,8 @@ function formulario(array $datos, array $errores, array $puntos, string $errorBo
                 echo "<option value='" . $clave . "' " . $marcado . ">" . $info["nombre"] . "</option>" . PHP_EOL;
             }
             ?>
-        </select>
+        </select><br>
         <?php muestraErrores($errores, "color"); ?>
-        <br>
 
         Grosor:
         <?php
@@ -239,6 +223,7 @@ function formulario(array $datos, array $errores, array $puntos, string $errorBo
 
         <br>
         <input type="submit" name="guardar" value="Guardar">
+        <?php muestraErrores($errores, "general"); ?>
     </form>
 
     <form action="index.php" method="post">
@@ -247,7 +232,7 @@ function formulario(array $datos, array $errores, array $puntos, string $errorBo
             <?php
             foreach ($puntos as $indice => $punto) {
                 echo "<option value='" . $indice . "'>"
-                    . $indice . " - " . $punto->getX() . " - " . $punto->getY()
+                    . $punto->getX() . " - " . $punto->getY()
                     . " - " . Punto::COLORES[$punto->getColor()]["nombre"]
                     . " - " . Punto::GROSORES[$punto->getGrosor()]
                     . "</option>" . PHP_EOL;
@@ -262,21 +247,16 @@ function formulario(array $datos, array $errores, array $puntos, string $errorBo
         ?>
     </form>
 
-    <textarea rows="5" cols="45" style="text-align: center;">
-        <?php
-        foreach ($puntos as $indice => $punto) {
+    <textarea rows="5" cols="45" style="text-align: center;"><?php
+        foreach ($puntos as $punto) {
             echo $punto->getX() . " - " . $punto->getY() .
                 " - " . Punto::COLORES[$punto->getColor()]["nombre"] . " - " .
                 Punto::GROSORES[$punto->getGrosor()] . PHP_EOL;
         }
-        ?>
-    </textarea>
+    ?></textarea>
     <br><br>
-    <img src="<?= $nombreFicher ?>"
-        alt="Imagen de puntos">
+    <img src="<?= $nombreFicher ?>?v=<?= time(); ?>" alt="Imagen de puntos">
     <br>
-    <a href="?descargar">Descargar</a>
-
+    <a href="imagen.php">Descargar</a>
 <?php
-
 }
